@@ -34,7 +34,17 @@ def read_data(filename):
     'gloire'
     """
     
-    return None
+    mots = []
+    with open(filename, 'r', encoding='utf8') as f:
+        for ligne in f:
+            ligne = ligne.rstrip('\n')  # supprime seulement le saut de ligne final
+            if ligne == '':
+                # si la ligne est vide, on ajoute un élément vide
+                mots.append('')
+            else:
+                # sinon on découpe la ligne en mots
+                mots.extend(ligne.split())
+    return mots
 
 
 def ensemble_mots(filename):
@@ -57,7 +67,10 @@ def ensemble_mots(filename):
     False
     """
     
-    return None
+    with open(filename, mode='r', encoding='utf8') as f:
+        texte = f.read()
+    liste_mots = texte.split()
+    return set(liste_mots)
 
 
 def mots_de_n_lettres(mots, n):
@@ -86,7 +99,11 @@ def mots_de_n_lettres(mots, n):
     ['anticonstitutionnellement', 'oto-rhino-laryngologistes']
     """
     
-    return None
+    resultat = set()
+    for mot in mots:
+        if len(mot) == n:
+            resultat.add(mot)
+    return resultat
 
 
 def mots_avec(mots, s):
@@ -113,7 +130,11 @@ def mots_avec(mots, s):
     ['képi', 'nickela', 'parkérisiez', 'semi-coke', 'stockais', 'week-end']
     """
     
-    return None
+    resultat = set()
+    for mot in mots:
+        if s in mot:
+            resultat.add(mot)
+    return resultat
 
 
 def cherche1(mots, start, stop, n):
@@ -138,7 +159,13 @@ def cherche1(mots, start, stop, n):
     ['zinguez', 'zippiez', 'zonerez']
     """
     
-    return None
+    
+    resultat = set()
+    for mot in mots:
+        if len(mot) == n:
+            if (start == "" or mot.startswith(start)) and (stop == "" or mot.endswith(stop)):
+                resultat.add(mot)
+    return resultat
 
 
 def cherche2(mots, lstart, lmid, lstop, nmin, nmax):
@@ -165,33 +192,47 @@ def cherche2(mots, lstart, lmid, lstop, nmin, nmax):
     {'alphabétisassiez'}
     """
     
-    return None
+    resultat = set()
+
+    # 2. Parcourir chaque mot de l'ensemble fourni
+    for mot in mots:
+        # 3. Vérifier que la longueur du mot est comprise entre nmin et nmax
+        if nmin <= len(mot) <= nmax:
+            # 4. Vérifier que le mot commence par l'un des préfixes
+            if any(mot.startswith(pref) for pref in lstart):
+                # 5. Vérifier que le mot contient au moins une chaîne intermédiaire
+                if any(mid in mot for mid in lmid):
+                    # 6. Vérifier que le mot se termine par un suffixe
+                    if any(mot.endswith(suf) for suf in lstop):
+                        # 7. Ajouter le mot à l'ensemble résultat
+                        resultat.add(mot)
+    return resultat
 
 
 def main():
     pass
     mots = read_data(FILENAME)
     ens = ensemble_mots(FILENAME)
-    # print( [ mot for mot in ["chronophage", "procrastinateur", "dangerosité", "gratifiant"] if mot in ens ] )
-    # m17 = mots_de_n_lettres(ens, 17)
-    # print(len(m17))
-    # print( random.sample(list(m17), 10) )
-    # mk = mots_avec(ens, 'k')
-    # print(len(mk))
-    # print( random.sample(list(mk), 5) )
-    # moo = mots_avec(ens, 'oo')
-    # print(len(moo))
-    # print( random.sample(list(moo), 5) )
-    # mz14 = cherche1(ens, 'z', '', 14)
-    # print(mz14)
-    # m21z = cherche1(ens, '', 'z', 18)
-    # print(m21z)
-    # m_z = cherche1(mots, 'z', 'z', 7)
-    # print(m_z)
-    # mab17ez = mots_avec(cherche1(ens, 'sur', 'ons', 17), 'x')
-    # print(mab17ez)
-    # mab17ez = cherche2(mots, 'a', 'b', 'z', 16, 16)
-    # print(mab17ez)
+    print( [ mot for mot in ["chronophage", "procrastinateur", "dangerosité", "gratifiant"] if mot in ens ] )
+    m17 = mots_de_n_lettres(ens, 17)
+    print(len(m17))
+    print( random.sample(list(m17), 10) )
+    mk = mots_avec(ens, 'k')
+    print(len(mk))
+    print( random.sample(list(mk), 5) )
+    moo = mots_avec(ens, 'oo')
+    print(len(moo))
+    print( random.sample(list(moo), 5) )
+    mz14 = cherche1(ens, 'z', '', 14)
+    print(mz14)
+    m21z = cherche1(ens, '', 'z', 18)
+    print(m21z)
+    m_z = cherche1(mots, 'z', 'z', 7)
+    print(m_z)
+    mab17ez = mots_avec(cherche1(ens, 'sur', 'ons', 17), 'x')
+    print(mab17ez)
+    mab17ez = cherche2(mots, 'a', 'b', 'z', 16, 16)
+    print(mab17ez)
 
 
 
